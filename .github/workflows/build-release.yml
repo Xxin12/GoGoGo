@@ -14,10 +14,8 @@ jobs:
     name: Release APK
     runs-on: ubuntu-latest
     steps:
-      # https://github.com/marketplace/actions/checkout
       - uses: actions/checkout@v5
 
-      # 设置 JDK
       - name: set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -73,13 +71,15 @@ jobs:
           path: ${{steps.sign_apk.outputs.signedReleaseFile}}
 
       # https://github.com/marketplace/actions/auto-changelog
-      # require commit format are "type(category): description [flag]"
+      # 主要修改：移除了 release-name 参数，或将其设置为标签名
       - name: Make Changelog
         uses: ardalanamini/auto-changelog@v4.0.4
-        id  : changelog
+        id: changelog
+        if: startsWith(github.ref, 'refs/tags/')  # 只在标签推送时生成changelog
         with:
-          github-token            : ${{ github.token }}
-          commit-types            : |
+          github-token: ${{ github.token }}
+          # 使用 YAML 多行字符串格式
+          commit-types: |
             feat: New Features
             fix: Bug Fixes
             build: Build System & Dependencies
@@ -91,10 +91,16 @@ jobs:
             ci: CI
             style: Code Style
             revert: Reverts
-          default-commit-type     : Other Changes
-          mention-authors         : true
+          default-commit-type: Other Changes
+          mention-authors: true
           mention-new-contributors: true
-          include-compare-link    : true
+          include-compare-link: true
+          # 使用标签作为 release-name，而不是 "master"
+          release-name: ${{ steps.var.outputs.tag }}
+          include-pr-links: true
+          include-commit-links: true
+          semver: true
+          use-github-autolink: true
 
       - name: Upload Changelog
         uses: actions/upload-artifact@v4
@@ -111,4 +117,3 @@ jobs:
           body: ${{ steps.changelog.outputs.changelog }}
           prerelease: false
           files: ${{steps.sign_apk.outputs.signedReleaseFile}}
-          
