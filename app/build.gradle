@@ -12,16 +12,16 @@ android {
 
     signingConfigs {
         debug {
-            storeFile file('..\\keystore\\go.jks')
-            storePassword 'gogogo'
-            keyAlias 'gogogokeykey'
-            keyPassword 'gogogokeykey'
+            storeFile file('..\\keystore\\GoGoGo.jks')
+            storePassword 'GoGoGo'
+            keyAlias 'GoGoKey'
+            keyPassword 'GoGoGo'
         }
         release {
-            storeFile file('..\\keystore\\go.jks')
-            storePassword 'gogogo'
-            keyAlias 'gogogokeykey'
-            keyPassword 'gogogokeykey'
+            storeFile file('..\\keystore\\GoGoGo.jks')
+            storePassword 'GoGoGo'
+            keyAlias 'GoGoKey'
+            keyPassword 'GoGoGo'
         }
     }
 
@@ -130,5 +130,6 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 }
+
 
 
