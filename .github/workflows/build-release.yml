@@ -62,7 +62,7 @@ jobs:
         run: |
           FULL_PATH=${{steps.sign_apk.outputs.signedReleaseFile}}
           FILENAME=$(basename "$FULL_PATH")
-          echo "FILENAME=${FILENAME}" >> $GITHUB_ENV  # 存储到环境变量
+          echo "FILENAME=${FILENAME}" >> $GITHUB_ENV
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -71,14 +71,12 @@ jobs:
           path: ${{steps.sign_apk.outputs.signedReleaseFile}}
 
       # https://github.com/marketplace/actions/auto-changelog
-      # 主要修改：移除了 release-name 参数，或将其设置为标签名
       - name: Make Changelog
         uses: ardalanamini/auto-changelog@v4.0.4
         id: changelog
-        if: startsWith(github.ref, 'refs/tags/')  # 只在标签推送时生成changelog
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           github-token: ${{ github.token }}
-          # 使用 YAML 多行字符串格式
           commit-types: |
             feat: New Features
             fix: Bug Fixes
@@ -95,18 +93,22 @@ jobs:
           mention-authors: true
           mention-new-contributors: true
           include-compare-link: true
-          # 使用标签作为 release-name，而不是 "master"
+          # 使用标签作为 release-name
           release-name: ${{ steps.var.outputs.tag }}
           include-pr-links: true
           include-commit-links: true
           semver: true
           use-github-autolink: true
+          # 添加输出文件路径配置
+          output: CHANGELOG.md
 
       - name: Upload Changelog
         uses: actions/upload-artifact@v4
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           name: Changelog
-          path: ${{ steps.changelog.outputs.changelog }}
+          # 指定确切的文件路径
+          path: CHANGELOG.md
 
       # https://github.com/marketplace/actions/gh-release
       - name: Release APK
@@ -114,6 +116,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           token: ${{ github.token }}
-          body: ${{ steps.changelog.outputs.changelog }}
+          # 读取 CHANGELOG.md 文件内容作为 Release 描述
+          body_path: CHANGELOG.md
           prerelease: false
           files: ${{steps.sign_apk.outputs.signedReleaseFile}}
