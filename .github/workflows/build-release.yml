@@ -111,3 +111,4 @@ jobs:
           body: ${{ steps.changelog.outputs.changelog }}
           prerelease: false
           files: ${{steps.sign_apk.outputs.signedReleaseFile}}
+          
