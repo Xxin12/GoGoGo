@@ -52,28 +52,22 @@ jobs:
     
     - name: Debug file structure
       run: |
-        echo "=== 当前目录 ==="
-        pwd
-        ls -la
-        
-        echo -e "\n=== 查找所有文件和目录 ==="
-        find . -type f -name "*.apk" 2>/dev/null || echo "没有找到 APK 文件"
-        find . -type f -name "*.aab" 2>/dev/null || echo "没有找到 AAB 文件"
+        echo "=== 查找所有 APK/AAB 文件 ==="
+        find . -type f \( -name "*.apk" -o -name "*.aab" \) 2>/dev/null
         
         echo -e "\n=== 查看 build 目录 ==="
-        find . -type d -name "build" 2>/dev/null | head -10 | while read dir; do
-          echo "检查目录: $dir"
-          find "$dir" -type f \( -name "*.apk" -o -name "*.aab" \) 2>/dev/null | head -5
+        find . -type d -name "build" 2>/dev/null | while read dir; do
+          echo "检查: $dir"
+          ls -la "$dir" 2>/dev/null | head -5
         done
         
-        echo -e "\n=== 查看 app 目录 ==="
-        ls -la app/ 2>/dev/null || echo "没有 app 目录"
+        echo -e "\n=== 当前目录结构 ==="
+        ls -la
     
     - name: Upload APK as artifact
       uses: actions/upload-artifact@v4
       with:
         name: android-app
-        # 修复：正确的多行语法
         path: |
           **/build/**/*.apk
           **/build/**/*.aab
