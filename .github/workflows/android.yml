@@ -15,7 +15,6 @@ jobs:
     
     - name: Configure Gradle wrapper with Tencent mirror
       run: |
-        # 使用腾讯云镜像下载 Gradle
         sed -i 's|https\\://services.gradle.org/distributions/gradle|https\\://mirrors.cloud.tencent.com/gradle/gradle|g' gradle/wrapper/gradle-wrapper.properties
     
     - name: Set up JDK 11
@@ -27,22 +26,14 @@ jobs:
     
     - name: Create gradle.properties with mirror repositories
       run: |
-        # 创建 gradle.properties 配置依赖镜像
         mkdir -p ~/.gradle
         cat > ~/.gradle/gradle.properties << EOF
-        # 设置构建参数
         org.gradle.daemon=false
         org.gradle.parallel=true
         org.gradle.configureondemand=true
-        
-        # 增加超时时间
         systemProp.org.gradle.internal.http.connectionTimeout=120000
         systemProp.org.gradle.internal.http.socketTimeout=120000
-        
-        # 使用阿里云 Maven 镜像
         systemProp.org.gradle.jvmargs=-Dkotlin.daemon.jvm.options\="-Xmx256m"
-        
-        # 清除代理设置
         systemProp.http.proxyHost=
         systemProp.http.proxyPort=
         systemProp.https.proxyHost=
@@ -59,35 +50,31 @@ jobs:
           ./gradlew assembleDebug && break || sleep 10
         done
     
-    - name: Debug file structure (调试信息)
+    - name: Debug file structure
       run: |
-        echo "=== 查看构建输出文件 ==="
-        find . -name "*.apk" -o -name "*.aab" 2>/dev/null | xargs ls -la 2>/dev/null || echo "没有找到 APK 文件"
-        echo ""
-        echo "=== 查看 build 目录内容 ==="
-        find . -path "*/build/*" -type f -name "*.apk" -o -name "*.aab" | head -20
-        echo ""
-        echo "=== 当前目录结构 ==="
+        echo "=== 当前目录 ==="
+        pwd
         ls -la
-        echo ""
-        echo "=== 查看是否有 app 模块 ==="
-        ls -la | grep -E "(app|module)"
+        
+        echo -e "\n=== 查找所有文件和目录 ==="
+        find . -type f -name "*.apk" 2>/dev/null || echo "没有找到 APK 文件"
+        find . -type f -name "*.aab" 2>/dev/null || echo "没有找到 AAB 文件"
+        
+        echo -e "\n=== 查看 build 目录 ==="
+        find . -type d -name "build" 2>/dev/null | head -10 | while read dir; do
+          echo "检查目录: $dir"
+          find "$dir" -type f \( -name "*.apk" -o -name "*.aab" \) 2>/dev/null | head -5
+        done
+        
+        echo -e "\n=== 查看 app 目录 ==="
+        ls -la app/ 2>/dev/null || echo "没有 app 目录"
     
     - name: Upload APK as artifact
       uses: actions/upload-artifact@v4
       with:
         name: android-app
+        # 修复：正确的多行语法
         path: |
           **/build/**/*.apk
           **/build/**/*.aab
-        if-no-files-found: error  # 改为 error 以便及时发现问题
-    
-    # 如果上面的方法不行，尝试这个备用方法
-    - name: Upload all build outputs (备用)
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-outputs
-        path: |
-          **/build/
         if-no-files-found: warn
