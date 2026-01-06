@@ -39,7 +39,7 @@ jobs:
         systemProp.org.gradle.internal.http.connectionTimeout=120000
         systemProp.org.gradle.internal.http.socketTimeout=120000
         
-        # 使用阿里云 Maven 镜像（仅用于依赖下载，不影响 Gradle 发行版下载）
+        # 使用阿里云 Maven 镜像
         systemProp.org.gradle.jvmargs=-Dkotlin.daemon.jvm.options\="-Xmx256m"
         
         # 清除代理设置
@@ -59,13 +59,35 @@ jobs:
           ./gradlew assembleDebug && break || sleep 10
         done
     
-    - name: List build outputs for debugging
-      run: find . -name "*.apk" -o -name "*.aab" | head -20
+    - name: Debug file structure (调试信息)
+      run: |
+        echo "=== 查看构建输出文件 ==="
+        find . -name "*.apk" -o -name "*.aab" 2>/dev/null | xargs ls -la 2>/dev/null || echo "没有找到 APK 文件"
+        echo ""
+        echo "=== 查看 build 目录内容 ==="
+        find . -path "*/build/*" -type f -name "*.apk" -o -name "*.aab" | head -20
+        echo ""
+        echo "=== 当前目录结构 ==="
+        ls -la
+        echo ""
+        echo "=== 查看是否有 app 模块 ==="
+        ls -la | grep -E "(app|module)"
     
     - name: Upload APK as artifact
       uses: actions/upload-artifact@v4
       with:
         name: android-app
         path: |
-          **/build/outputs/apk/**/*.apk
-          **/build/outputs/bundle/**/*.aab
+          **/build/**/*.apk
+          **/build/**/*.aab
+        if-no-files-found: error  # 改为 error 以便及时发现问题
+    
+    # 如果上面的方法不行，尝试这个备用方法
+    - name: Upload all build outputs (备用)
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-outputs
+        path: |
+          **/build/
+        if-no-files-found: warn
