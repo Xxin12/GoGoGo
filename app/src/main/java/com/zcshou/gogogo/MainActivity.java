@@ -1150,7 +1150,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener {
     }
 
     /*============================== 更新 相关 ==============================*/
-    private void initUpdateVersion() {
+    /*private void initUpdateVersion() {
         mDownloadManager =(DownloadManager) MainActivity.this.getSystemService(DOWNLOAD_SERVICE);
 
         // 用于监听下载完成后，转到安装界面
@@ -1162,6 +1162,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener {
         };
         registerReceiver(mDownloadBdRcv, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
+    
 
     private void checkUpdateVersion(boolean result) {
         String mapApiUrl = "https://api.github.com/repos/zcshou/gogogo/releases/latest";
@@ -1213,7 +1214,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener {
                                     updateCancel.setOnClickListener(v -> alertDialog.cancel());
 
                                     /* 这里用来保存下载地址 */
-                                    JSONArray jsonArray = new JSONArray(getRetJson.getString("assets"));
+                                    /*JSONArray jsonArray = new JSONArray(getRetJson.getString("assets"));
                                     JSONObject jsonObject = jsonArray.getJSONObject(0);
                                     String download_url = jsonObject.getString("browser_download_url");
                                     mUpdateFilename = jsonObject.getString("name");
@@ -1281,5 +1282,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener {
             startActivity(intent);
         }
     }
+    */
 }
+
 
