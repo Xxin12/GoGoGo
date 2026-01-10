@@ -209,9 +209,9 @@ public class MainActivity extends BaseActivity implements SensorEventListener {
 
         initSearchView();
 
-        initUpdateVersion();
+        //initUpdateVersion();
 
-        checkUpdateVersion(false);
+        //checkUpdateVersion(false);
     }
 
     @Override
@@ -248,7 +248,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener {
             Intent serviceGoIntent = new Intent(MainActivity.this, ServiceGo.class);
             stopService(serviceGoIntent);
         }
-        unregisterReceiver(mDownloadBdRcv);
+        //unregisterReceiver(mDownloadBdRcv);
 
         mSensorManager.unregisterListener(this);
 
@@ -430,9 +430,9 @@ public class MainActivity extends BaseActivity implements SensorEventListener {
                         GoUtils.DisplayToast(this, getResources().getString(R.string.app_error_dev));
                     }
                 }
-            } else if (id == R.id.nav_update) {
+            } /*else if (id == R.id.nav_update) {
                 checkUpdateVersion(true);
-            } else if (id == R.id.nav_feedback) {
+            }*/ else if (id == R.id.nav_feedback) {
                 File file = new File(getExternalFilesDir("Logs"), GoApplication.LOG_FILE_NAME);
                 ShareUtils.shareFile(this, file, item.getTitle().toString());
             } else if (id == R.id.nav_contact) {
@@ -1150,7 +1150,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener {
     }
 
     /*============================== 更新 相关 ==============================*/
-    /*private void initUpdateVersion() {
+    private void initUpdateVersion() {
         mDownloadManager =(DownloadManager) MainActivity.this.getSystemService(DOWNLOAD_SERVICE);
 
         // 用于监听下载完成后，转到安装界面
@@ -1282,7 +1282,7 @@ public class MainActivity extends BaseActivity implements SensorEventListener {
             startActivity(intent);
         }
     }
-    */
 }
+
 
 
