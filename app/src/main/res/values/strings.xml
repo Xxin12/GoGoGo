@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">田云波</string>
+    <string name="app_name">去上班</string>
     <string name="app_settings">设置</string>
     <string name="app_history">历史记录</string>
     <string name="app_author">上班</string>
@@ -138,6 +138,7 @@
     <string name="update_time">更新时间：</string>
     <string name="update_commit">提交信息：</string>
 </resources>
+
 
 
 
